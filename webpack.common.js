@@ -82,6 +82,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       inject: 'body',
+      title: 'Bank Statement Analyser',
       filename: 'index.html',
       template: 'src/template.html',
     }),
