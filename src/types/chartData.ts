@@ -3,6 +3,8 @@ type ChartData = {
     datasets: {
       label: string;
       backgroundColor: string;
+      borderColor: string;
+      borderWidth: number;
       data: number[];
     }[];
 };

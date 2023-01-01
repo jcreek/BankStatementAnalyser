@@ -1,5 +1,6 @@
 import { transactions } from "./bankData";
 import Chart from 'chart.js/auto';
+import * as chroma from 'chroma-js';
 
 export default function generateCharts(): void {
     // const filter: Filter = { year: 2022, category: 'Eating out', excludeIncome: true};
@@ -40,6 +41,13 @@ function getChartData(transactions: BankTransaction[], filters: { year?: number,
       datasets: []
     };
   }
+
+  // Generate a color scale using the chroma-js library, with the number of colors equal to the number of categories
+  const categories = new Set<string>();
+  for (const transaction of transactions) {
+    categories.add(transaction.category);
+  }
+  const colorScale = chroma.scale('Spectral').mode('hsl').colors(categories.size);
   
   // Filter the transactions based on the specified filters
   const filteredTransactions = transactions.filter(transaction => {
@@ -90,40 +98,32 @@ function getChartData(transactions: BankTransaction[], filters: { year?: number,
   };
 
   // Add a dataset for each category
-  const categories: { [key: string]: string } = {};
-  for (const year in groupedTransactions) {
-    for (let index = 0; index < groupedTransactions[year].length; index++) {
-      const transaction = groupedTransactions[year][index];
-      if (!categories[transaction.category]) {
-        categories[transaction.category] = getRandomColor();
-        chartData.datasets.push({
-          label: transaction.category,
-          data: [],
-          backgroundColor: categories[transaction.category]
-        });
-      }
-    }
-    console.log('here');
-  
-    // Populate the chart data with the transaction amounts
-    for (const year in groupedTransactions) {
-      chartData.labels.push(year);
-      for (let i = 0; i < chartData.datasets.length; i++) {
-        chartData.datasets[i].data.push(0);
-      }
-      for (const transaction of groupedTransactions[year]) {
-        for (let i = 0; i < chartData.datasets.length; i++) {
-          if (chartData.datasets[i].label === transaction.category) {
-            chartData.datasets[i].data[chartData.labels.length - 1] += transaction.amount;
-            break;
-          }
+  let i = 0;
+  categories.forEach((category: string) => {
+    chartData.datasets.push({
+      label: category,
+      data: [],
+      backgroundColor: colorScale[i % colorScale.length],  // Use a color from the color scale,
+      borderColor: 'black',
+      borderWidth: 2
+    });
+    i++;
+  });
+
+  // Populate the chart data with the transaction amounts
+  for (const key of Object.keys(groupedTransactions)) {
+    chartData.labels.push(key);
+    const transactions = groupedTransactions[key];
+    for (let i = 0; i < chartData.datasets.length; i++) {
+      chartData.datasets[i].data.push(0);
+      for (const transaction of transactions) {
+        if (transaction.category === chartData.datasets[i].label) {
+          chartData.datasets[i].data[chartData.labels.length - 1] += transaction.amount;
         }
       }
     }
-
-
-  
-    return chartData;
   }
+
+  return chartData;
 }
   
