@@ -1,5 +1,6 @@
 import loadServiceWorker from './loadServiceWorker';
-import Chart from 'chart.js/auto';
+import loadBankData from './loadBankData';
+import generateCharts from './generateCharts';
 
 require('./assets/favicon.ico');
 require('./assets/android-chrome-192x192.png');
@@ -12,26 +13,12 @@ require('./styles/buttons.scss');
 require('./styles/modal.scss');
 require('./styles/spinner.scss');
 
-const ctx: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('myChart');
+if (localStorage.hasOwnProperty('bankData')) {
+  loadBankData(JSON.parse(localStorage.getItem('bankData')).values);
+  generateCharts();
+}
 
-new Chart(ctx, {
-  type: 'bar',
-  data: {
-    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-    datasets: [{
-      label: '# of Votes',
-      data: [12, 19, 3, 5, 2, 3],
-      borderWidth: 1
-    }]
-  },
-  options: {
-    scales: {
-      y: {
-        beginAtZero: true
-      }
-    }
-  }
-});
+
 
 if (process.env.NODE_ENV === 'production') {
   loadServiceWorker();

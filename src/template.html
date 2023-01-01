@@ -45,11 +45,6 @@
             <canvas id="myChart"></canvas>
         </div>
 
-        
-
-
-        
-
         <footer class="footer-container">
             <hr>
             <span class="footer-items">Copyright &copy; 2022 Josh Creek</span>
@@ -118,7 +113,7 @@
              * Enables user interaction after all libraries are loaded.
              */
             function maybeEnableButtons() {
-              if (gapiInited && gisInited) {
+              if (gapiInited && gisInited && !localStorage.hasOwnProperty('bankData')) {
                 document.getElementById('authorize_button').style.visibility = 'visible';
               }
             }
@@ -132,7 +127,7 @@
                   throw (resp);
                 }
                 document.getElementById('signout_button').style.visibility = 'visible';
-                document.getElementById('authorize_button').innerText = 'Refresh';
+                document.getElementById('authorize_button').innerText = 'Refresh Google Sheets data';
                 await listMajors();
               };
       
@@ -177,15 +172,11 @@
                 return;
               }
               const range = response.result;
+              localStorage.setItem('bankData', JSON.stringify(range));
               if (!range || !range.values || range.values.length == 0) {
                 document.getElementById('content').innerText = 'No values found.';
                 return;
               }
-              // Flatten to string to display
-              const output = range.values.reduce(
-                  (str, row) => `${str}${row[0]}, ${row[4]}\n`,
-                  'Name, Major:\n');
-              document.getElementById('content').innerText = output;
             }
         </script>      
         <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
