@@ -1,8 +1,0 @@
-{
-  "compilerOptions": {
-    "preserveConstEnums": true,
-    "sourceMap": true
-  },
-  "include": ["src/**/*", "src/custom.d.ts", "src/audio.d.ts"],
-  "exclude": ["node_modules", "**/*.spec.ts"]
-}
